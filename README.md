@@ -1,53 +1,63 @@
-# Project 1: GPX to CSV using Java
+# Project 2: Aggregate Data
 
-A GPX file is a GPS data file saved in the GPS Exchange format, which is an open standard used by many GPS programs. It contains latitude and longitude location data that may include waypoints, routes, and tracks. A CSV file is a comma-separated values file commonly used by spreadsheet programs such as Microsoft Excel. It contains plain text data sets separated by commas, with each new line in the CSV file representing a new database row and each database row consisting of one or more fields separated by a comma.
+In Project 2, we will continue working with our triplog dataset. This dataset contains latitude and longitude data that was gathered over a 3 day trip. Now that we have our data converted to a CSV, we want to begin extracting information from it and transform it into useful metrics to analyze the data. You will be given the file [triplog.csv](./triplog.csv), which is the same as the file you created last project. We are interested in using the data stored within to create useful functions that we will use in future projects. For example, finding the total distance traveled during the trip or the average speed. In this project, you will create the class `TripPoint.java` in order to implement a number of methods for this purpose. 
 
-For this project, you are given the gpx file [triplog.gpx](./triplog.gpx) which was gathered recently over a 3 day trip. Your objective is to read the latitude and longitude data stored within to create a new csv file called triplog.csv so that we can add to the data and have easier access to it in future projects. You are given `Driver.java`, and `triplog.gpx` (do not edit these files). You are required to create and write the class `Convert.java` to complete the project.
+## TripPoint UML
 
-## The Data
+<img src=./resources/UML.PNG width=50% height=50%>
 
-Inside [triplog.gpx](./triplog.gpx) you will find entries that look like this:
+Feel free to add your own helper methods as needed. 
 
-<img src=./resources/gpxtriplog.PNG width=50% height=50%>
+## Methods
 
-Each pair of lat (latitude) and lon (longitude) is a point that was captured during the trip. The points were captured at 5 minute intervals, which is another column we will be adding during the conversion to a csv. We want to grab the data and add a time column starting at 0 (minutes) incrementing by 5 for each further point. The resulting csv should be of the form "Time,Latitude,Longitude" which you can see here in excel: 
+### Constructors
 
-<img src=./resources/excelexample.PNG width=50% height=50%>
+`TripPoint(int time, double lat, double lon)`: Initialize the class fields `time`, `lat`, and `lon`.
 
-As well as what it looks like in a txt format: 
+### Getters
 
-<img src=./resources/txtexample.PNG width=50% height=50%>
+`getTime()`: Should return `time`.
 
-Don't forget to add the header of "Time,Latitude,Longitude" at the top of your csv.
+`getLat()`: Should return `lat`.
 
-* Note that the data file used in Zybooks is different from the one in GitHub, so your solution should be a general solution.
+`getLon()`: Should return `lon`.
 
-## Data Anomalies
+`getTrip()`: Should return a copy of the `trip` ArrayList
 
-There are some inconsistencies in the gpx data you will need to work around. These include extra newlines between lines, extra whitespace on some lines (spaces and tabs), and '?' characters in some of the latitude and longitude values. You should account for these errors while reading the gpx file, and resolve them before writing to the csv file. 
+### Other Methods
 
-For example, you may see a line that looks like this:
+`readFile(String filename)`: Read in the data from [triplog.csv](./triplog.csv) to the `trip` ArrayList. The idea is to initialize each line of data (Time,Latitude,Longitude) as a TripPoint object. You can then fill the `trip` ArrayList with those TripPoint objects. 
 
-<img src=./resources/anexample.PNG width=50% height=50%> 
+`totalTime()`: Should return the total time of the trip in hours. Remember the Time column in the data is in minutes. 
 
-Notice the latitude has extra spaces after the 34 and a '?' in the middle of the decimal. These should be removed in your csv as such:
+### Calculating Distance 
 
-<img src=./resources/anexample2.PNG width=50% height=50%> 
+For the remaining methods, we need a way to calculate the distance given two points of latitude and longitude. For this calcuation, we will be using the [Haversine formula](https://en.wikipedia.org/wiki/Haversine_formula) which is a commonly used formula for calculating the distance between two points on a sphere, such as the Earth. There are some pros and cons to using this to analyze our GPS data. 
 
-## Required Method
+The Pros:
+1. Haversine distance is relatively easy to implement and is widely available in programming languages and libraries.
+2. Haversine distance is a fast and efficient calculation that can handle large datasets.
 
-You are only required to implement one method:
+The Cons: 
+1. Haversine distance assumes that the Earth is a perfect sphere, which is not entirely accurate as the Earth is slightly oblate (ellipsoidal).
+2. Haversine distance does not take into account changes in altitude, which can affect the actual distance traveled between two points.
 
-`public static void convertFile(String filename)`: Given the name of the gpx file to be converted (triplog.gpx), create a new csv (triplog.csv) which follows the outline above. This method is called in Driver.java which should not be changed.
+So our calculation won't be perfect, but for our purposes it will be close enough. 
 
-Other than that, you are free to implement any other helper methods you need in Convert.java to complete the project. 
+`haversineDistance(TripPoint a, TripPoint b)`: Should compute and return the Haversine distance between two points in kilometers. 
+
+`totalDistance()`: Should compute and return the total distance of the trip in kilometers. Meaning the total distance between every point in the `trip` ArrayList. 
+
+`avgSpeed(TripPoint a, TripPoint b)`: Should return the average speed between two points in kilometers per hour. This method should work no matter which order the points are given in. 
 
 ## Grading
 
 Plagiarism will not be tolerated under any circumstances. Participating students will be penalized depending on the degree of plagiarism. It includes "No-code" sharing among the students. It can lead to academic misconduct reporting to the authority if identical code is found among students. 
 
 You will be graded on: 
-* Zybooks submission: 100 points
+* Zybooks submission: 80 points
+* Github commits (10 commits): 10 points
+* Javadocs: 10 points
 
 Note that the data file used in Zybooks is different from the one in GitHub so your solution should be a general solution.
 
